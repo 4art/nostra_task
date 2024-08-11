@@ -1,5 +1,5 @@
 import pandas as pd
-
+from config import Config
 from data_loader import DataLoader
 from pandas_config import PandasConfig
 
@@ -45,13 +45,8 @@ class WebPerformanceMetrics(PandasConfig):
 
 
 def main():
-    url = "https://gist.githubusercontent.com/jhiggins-thrillist/6f246cb9b3541e77a0722190e4e96fa5/raw/8cd8d8831ae4fe499cb3c82231fbc74067752e4a/payloads.jsonl"
-
-    # Config pd
-    PandasConfig().apply_config()
-
     # Create an instance of the DataLoader class and load the data
-    data_loader = DataLoader(url)
+    data_loader = DataLoader(Config.JSONL_URL)
     df = data_loader.get_dataframe()
 
     # Create an instance of the WebPerformanceMetrics class

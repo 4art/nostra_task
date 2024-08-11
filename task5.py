@@ -6,6 +6,7 @@ import pandas as pd
 import seaborn as sns
 from matplotlib.lines import Line2D
 
+from config import Config
 from data_loader import DataLoader
 from task2 import WebPerformanceMetrics
 from task3 import WebPerformanceMetricsAggregator
@@ -57,7 +58,7 @@ class WebPerformanceMetricsVisualizer:
             plt.legend(handles=[test_patch, control_patch, mean_line, median_line, percentile_75_line],
                        title='Parameters')
 
-            plt.savefig(f'output/{metric}_histogram.png')
+            plt.savefig(f'{Config.OUTPUT_DIR}/{metric}_histogram.png')
             plt.show()
             plt.close()
 
@@ -77,7 +78,7 @@ class WebPerformanceMetricsVisualizer:
             plt.title(f'Box Plot of {metric} by {group_by}')
             plt.xlabel(group_by)
             plt.ylabel(metric)
-            plt.savefig(f'output/{metric}_boxplot.png')
+            plt.savefig(f'{Config.OUTPUT_DIR}/{metric}_boxplot.png')
             plt.show()
             plt.close()
 
@@ -91,19 +92,17 @@ class WebPerformanceMetricsVisualizer:
         print("Summary Statistics for Performance Metrics:")
         print(summary)
 
-        with open('output/summary_statistics.txt', 'w') as f:
+        with open(f'{Config.OUTPUT_DIR}/summary_statistics.txt', 'w') as f:
             f.write("Summary Statistics for Performance Metrics:\n")
             f.write(summary.to_string())
 
 
 def main():
-    url = "https://gist.githubusercontent.com/jhiggins-thrillist/6f246cb9b3541e77a0722190e4e96fa5/raw/8cd8d8831ae4fe499cb3c82231fbc74067752e4a/payloads.jsonl"
-
     # Create output directory if it doesn't exist
-    os.makedirs('output', exist_ok=True)
+    os.makedirs(Config.OUTPUT_DIR, exist_ok=True)
 
     # Create an instance of the DataLoader class and load the data
-    data_loader = DataLoader(url)
+    data_loader = DataLoader(Config.JSONL_URL)
     df = data_loader.get_dataframe()
 
     # Create an instance of the WebPerformanceMetrics class
