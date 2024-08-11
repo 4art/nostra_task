@@ -23,7 +23,7 @@ The project requires Python 3.7+ and the following libraries:
 ## Running the Scripts
 
 1. Install the dependencies: `pip install -r requirements.txt`
-2. Run the individual tasks: `python task2.py && python task3.&& py python task5.py`
+2. Run the individual tasks: `python task2.py && python task3.py && python task5.py`
 
 
 ## Using Docker
