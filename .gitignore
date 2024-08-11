@@ -4,3 +4,5 @@
 # Python bytecode cache
 __pycache__/
 
+JetBrains
+.idea/
