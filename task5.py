@@ -1,16 +1,20 @@
-import pandas as pd
+import os
+
+import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
+from matplotlib.lines import Line2D
+
 from data_loader import DataLoader
 from task2 import WebPerformanceMetrics
-import matplotlib.patches as mpatches
-from matplotlib.lines import Line2D
-import os
+from task3 import WebPerformanceMetricsAggregator
 
 
 class WebPerformanceMetricsVisualizer:
-    def __init__(self, df: pd.DataFrame):
+    def __init__(self, df: pd.DataFrame, aggregated_df: pd.DataFrame):
         self.df = df
+        self.aggregated_df = aggregated_df
 
     def plot_histograms(self) -> None:
         """
@@ -27,20 +31,20 @@ class WebPerformanceMetricsVisualizer:
             sns.histplot(data=self.df, x=metric, hue='_edge_assignment', kde=True, element="step",
                          palette=colors)
 
-            # Calculate mean, median, and 75th percentile for each group
-            means = self.df.groupby('_edge_assignment')[metric].mean()
-            medians = self.df.groupby('_edge_assignment')[metric].median()
-            percentiles_75 = self.df.groupby('_edge_assignment')[metric].quantile(0.75)
-
-            # Plot vertical lines for mean, median, and 75th percentile
+            # Use precalculated data for mean, median, and 75th percentile
             for group in ['test', 'control']:
-                plt.axvline(x=means[group], color=colors[group], linestyle='--', linewidth=2)
-                plt.axvline(x=medians[group], color=colors[group], linestyle='-.', linewidth=2)
-                plt.axvline(x=percentiles_75[group], color=colors[group], linestyle=':', linewidth=2)
+                mean = self.aggregated_df.loc[group, f'{metric}_mean']
+                median = self.aggregated_df.loc[group, f'{metric}_median']
+                percentile_75 = self.aggregated_df.loc[group, f'{metric}_75th_percentile']
+
+                plt.axvline(x=mean, color=colors[group], linestyle='--', linewidth=2)
+                plt.axvline(x=median, color=colors[group], linestyle='-.', linewidth=2)
+                plt.axvline(x=percentile_75, color=colors[group], linestyle=':', linewidth=2)
 
             plt.title(f'Histogram of {metric} by _edge_assignment')
             plt.xlabel(metric)
             plt.ylabel('Frequency')
+
             # Create custom legend
             test_patch = mpatches.Patch(color='blue', label='Test Group (Blue) in _edge_assignment')
             control_patch = mpatches.Patch(color='red', label='Control Group (Red) in _edge_assignment')
@@ -108,8 +112,12 @@ def main():
     # Compute the full metrics (including all relevant columns)
     df_metrics_full = web_metrics.compute_metrics_full()
 
+    # Create an instance of the WebPerformanceMetricsAggregator class and get aggregated metrics
+    aggregator = WebPerformanceMetricsAggregator(df_metrics_full)
+    aggregated_df = aggregator.get_aggregated_metrics()
+
     # Create an instance of the WebPerformanceMetricsVisualizer class
-    visualizer = WebPerformanceMetricsVisualizer(df_metrics_full)
+    visualizer = WebPerformanceMetricsVisualizer(df_metrics_full, aggregated_df)
 
     # Visualize the most relevant information
     visualizer.summarize_statistics()

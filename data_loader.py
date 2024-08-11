@@ -1,7 +1,9 @@
-import pandas as pd
-import requests
 import json
 from typing import List, Dict
+
+import pandas as pd
+import requests
+
 
 class DataLoader:
     def __init__(self, url: str):

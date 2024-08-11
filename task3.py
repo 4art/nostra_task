@@ -1,4 +1,5 @@
 import pandas as pd
+
 from data_loader import DataLoader
 from pandas_config import PandasConfig
 from task2 import WebPerformanceMetrics
@@ -8,6 +9,7 @@ class WebPerformanceMetricsAggregator(PandasConfig):
     def __init__(self, df: pd.DataFrame):
         super().__init__()
         self.df = df
+        self.aggregated_df = None
 
     def aggregate_metrics(self) -> pd.DataFrame:
         """
@@ -16,6 +18,9 @@ class WebPerformanceMetricsAggregator(PandasConfig):
 
         Returns a DataFrame with aggregated metrics.
         """
+        if self.aggregated_df is not None:
+            return self.aggregated_df
+
         # Ensure metrics are computed before aggregation
         web_metrics = WebPerformanceMetrics(self.df)
         self.df = web_metrics.compute_metrics()
@@ -35,16 +40,25 @@ class WebPerformanceMetricsAggregator(PandasConfig):
         }
 
         # Compute aggregated metrics
-        aggregated_df = self.df.groupby('_edge_assignment').agg(aggregation_functions)
+        self.aggregated_df = self.df.groupby('_edge_assignment').agg(aggregation_functions)
 
         # Flatten the multi-level columns
-        aggregated_df.columns = [
+        self.aggregated_df.columns = [
             f'{metric}_{agg_func}'
             for metric, agg_funcs in aggregation_functions_renamed.items()
             for agg_func in agg_funcs
         ]
 
-        return aggregated_df.reset_index()
+        # Keep '_edge_assignment' as index instead of resetting it for task5
+        return self.aggregated_df
+
+    def get_aggregated_metrics(self) -> pd.DataFrame:
+        """
+        Returns the aggregated metrics. If not already computed, computes them first.
+        """
+        if self.aggregated_df is None:
+            self.aggregate_metrics()
+        return self.aggregated_df
 
 
 def main():

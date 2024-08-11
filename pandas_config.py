@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 class PandasConfig:
     def __init__(self, max_columns: int = 10, max_rows: int = 10):
         self.max_columns = max_columns
@@ -13,4 +14,3 @@ class PandasConfig:
         """
         pd.set_option('display.max_columns', self.max_columns)
         pd.set_option('display.max_rows', self.max_rows)
-
